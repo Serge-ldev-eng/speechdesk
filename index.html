@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Speechdesk - Talent Passport for Skilled Refugees</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f4f6f8;color:#111}
+header{background:#0f2a44;color:white;padding:28px 18px;text-align:center}
+header h1{margin:0;font-size:28px}
+header p{opacity:.9}
+.badge{display:inline-block;background:#ffb703;color:#111;padding:6px 12px;border-radius:20px;font-weight:bold;margin-top:10px}
+section{max-width:900px;margin:20px auto;padding:0 16px}
+.card{background:white;padding:18px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.08);margin-bottom:16px}
+input,select,textarea{width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box}
+button{background:#0f2a44;color:white;border:0;padding:13px 18px;border-radius:8px;font-weight:bold;cursor:pointer;width:100%}
+button:hover{background:#1a4a7a}
+.talent{border-left:5px solid #ffb703}
+.small{font-size:13px;color:#555}
+.flex{display:flex;gap:10px;flex-wrap:wrap}
+.flex>*{flex:1;min-width:140px}
+</style>
+</head>
+<body>
+<header>
+<h1>SPEECHDESK</h1>
+<p><b>Talent Passport for Skilled Refugees</b></p>
+<p>Skilled refugees arrive with degrees and experience, but their credentials are not recognized in the host country because they studied in a different language, in a different system, and they are not nationals. They have papers, but the papers have no value. So they are forced into low jobs. This is brain waste.</p>
+<div class="badge">TRACK 1 • Credential Recognition & Skills Validation • SDG 8, 4, 10</div>
+</header>
+
+<section>
+<div class="card">
+<h2>1. Create Your Talent Passport</h2>
+<p class="small">Example: A lawyer from DRC who studied in French goes to Kenya. His degree is not recognized. Speechdesk translates his skills for employers.</p>
+<input id="name" placeholder="Full Name - e.g. Serge M.">
+<div class="flex">
+<select id="skill">
+<option>Skill / Profession</option>
+<option>Lawyer</option><option>Teacher</option><option>Nurse</option>
+<option>Engineer</option><option>Developer</option><option>Accountant</option>
+<option>Electrician</option><option>Plumber</option><option>Designer</option>
+</select>
+<select id="origin"><option>Country of Origin</option><option>DRC</option><option>Burundi</option><option>Somalia</option><option>South Sudan</option><option>Rwanda</option><option>Ethiopia</option></select>
+<select id="host"><option>Host Country Now</option><option>Kenya</option><option>Uganda</option><option>Rwanda</option><option>Tanzania</option></select>
+</div>
+<div class="flex">
+<select id="lang"><option>Language of Study</option><option>French</option><option>English</option><option>Arabic</option><option>Swahili</option></select>
+<select id="papers"><option>Do you have papers?</option><option>Yes - Have Papers</option><option>Yes - But Not Recognized</option><option>Lost / No Papers</option></select>
+</div>
+<input id="exp" placeholder="Years of Experience - e.g. 5">
+<textarea id="proof" placeholder="Prove your skill without diploma: Portfolio link, video intro link, or describe a project you did..."></textarea>
+<button onclick="createCard()">Create My Verified Talent Card →</button>
+</div>
+
+<div class="card">
+<h2>2. Find Talent - For Employers</h2>
+<input id="search" oninput="render()" placeholder="Search by skill... e.g. Lawyer, Nurse, Teacher">
+<div id="list"></div>
+</div>
+
+<div class="card">
+<h2>3. How It Works</h2>
+<p><b>1. Create Passport</b> → Fill your skills, languages, experience</p>
+<p><b>2. Validate Skill</b> → Add portfolio, video or skills test instead of only diploma</p>
+<p><b>3. Get Verified Card</b> → Shareable card employers can trust</p>
+<p><b>4. Get Hired</b> → Employers search and contact you</p>
+<p class="small">SDG 8 Decent Work • SDG 4 Quality Education • SDG 10 Reduced Inequalities</p>
+</div>
+</section>
+
+<script>
+let talents = JSON.parse(localStorage.getItem('talents')||'[]');
+if(talents.length===0){
+ talents=[
+  {name:"Serge M.",skill:"Lawyer",origin:"DRC",host:"Kenya",lang:"French",papers:"Yes - But Not Recognized",exp:"6",proof:"Law degree in French. 6 years experience. Can explain Kenyan vs DRC law."},
+  {name:"Amina K.",skill:"Nurse",origin:"Somalia",host:"Kenya",lang:"English",papers:"Lost / No Papers",exp:"4",proof:"4 years in hospital. Video intro available."}
+ ];
+}
+function createCard(){
+ let t={name:document.getElementById('name').value||"Anonymous",skill:document.getElementById('skill').value,origin:document.getElementById('origin').value,host:document.getElementById('host').value,lang:document.getElementById('lang').value,papers:document.getElementById('papers').value,exp:document.getElementById('exp').value,proof:document.getElementById('proof').value};
+ if(!t.name){alert("Add your name");return}
+ talents.unshift(t); localStorage.setItem('talents',JSON.stringify(talents)); render(); alert("Talent Passport Created! Scroll down to see your card.");
+}
+function render(){
+ let q=(document.getElementById('search').value||"").toLowerCase();
+ let html="";
+ talents.filter(t=>(t.skill+t.name).toLowerCase().includes(q)).forEach(t=>{
+  html+=`<div class="card talent"><b>✅ VERIFIED TALENT CARD - ${t.name}</b><br><b>${t.skill}</b> • ${t.exp} years experience<br>From ${t.origin} → Now in ${t.host} • Studied in ${t.lang}<br>Papers: ${t.papers}<br><p>${t.proof}</p><button onclick="alert('Employer interest sent to ${t.name}!')">Contact / Hire →</button></div>`;
+ });
+ document.getElementById('list').innerHTML=html||"No talent found. Create the first one above.";
+}
+render();
+</script>
+</body>
+</html>
